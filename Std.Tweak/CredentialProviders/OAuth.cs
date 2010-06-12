@@ -9,6 +9,8 @@ using System.Xml;
 using System.Xml.Linq;
 using Std.Network;
 using System.Web;
+using System.Runtime.Serialization.Json;
+using System.Xml;
 
 namespace Std.Tweak.CredentialProviders
 {
@@ -55,9 +57,9 @@ namespace Std.Tweak.CredentialProviders
             string target = TwitterUri + (uriParticle.EndsWith("/") ? uriParticle.Substring(1) : uriParticle);
 
             if (target.EndsWith("format"))
-                target = target.Substring(0, target.Length - 6) + "xml";
-            else if (target.EndsWith("json"))
-                target = target.Substring(0, target.Length - 4) + "xml";
+                target = target.Substring(0, target.Length - 6) + "json";
+            else if (target.EndsWith("xml"))
+                target = target.Substring(0, target.Length - 3) + "json";
 
 
             if(String.IsNullOrEmpty(Token) || String.IsNullOrEmpty(Secret))
@@ -93,9 +95,9 @@ namespace Std.Tweak.CredentialProviders
                         {
                             using (var s = res.GetResponseStream())
                             {
-                                using (var sr = new StreamReader(s))
+                                using (var r = JsonReaderWriterFactory.CreateJsonReader(s, XmlDictionaryReaderQuotas.Max))
                                 {
-                                    xd = XDocument.Load(sr);
+                                    xd = XDocument.Load(r);
                                 }
                             }
                         }
